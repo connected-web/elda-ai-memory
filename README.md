@@ -54,8 +54,8 @@ External memory is expected to be made up of files. These files can be read from
 ```js
 var memory = require('elda-ai-memory');
 memory(config).then(function(instance) {
-  return instance.read('file/name.json').then(function(contents, name) {
-    console.log('Read from file:', name, contents);
+  return instance.read('file/name.json').then(function(contents) {
+    console.log('Read from file:', contents);
   });
 });
 ```
@@ -136,8 +136,8 @@ memory(config).then(function(instance) {
 
   function readAFile() {
     // Read a file
-    return instance.read('file/name.json').then(function(contents, name) {
-      console.log('Read from file:', name, contents);
+    return instance.read('file/name.json').then(function(contents) {
+      console.log('Read from file:', contents);
     });
   }
 
