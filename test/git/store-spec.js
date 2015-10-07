@@ -40,7 +40,7 @@ describe('Memory Store', function() {
     }
 
     function cleanMemory() {
-      return memory.clean();
+      return memory.destroy();
     }
 
     function finalCheck() {
