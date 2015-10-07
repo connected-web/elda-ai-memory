@@ -40,13 +40,15 @@ describe('Configure memory of type Git', function() {
   });
 
   it('should accept a promise with the file contents when asked to read', function(done) {
-    var expected = JSON.stringify({
-      "file": "info.json",
-      "message": "If you're reading this JSON file you've successfully accessed the remote tes"
-    }, 4);
+    var expected = {
+      'file': 'info.json',
+      'message': `If you're reading this JSON file you've successfully accessed the remote test`
+    };
 
     memory(testConfig).then(function(instance) {
-      return instance.read('some/file.json').then(testResult(expected, done), done);
+      return instance.read('info.json')
+        .then(JSON.parse)
+        .then(testResult(expected, done), done);
     });
   });
 });
