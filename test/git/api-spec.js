@@ -51,4 +51,31 @@ describe('Configure memory of type Git', function() {
         .then(testResult(expected, done), done);
     });
   });
+
+  it('should accept a promise with a file name when asked to read, and write to that file with the expected content', function(done) {
+    var expectedFile = 'counter.json';
+    var expectedResult = JSON.parse(read(`./temp/${expectedFile}`));
+    expectedResult.updates = expectedResult.updates + 1;
+    expectedResult.timestamp = Date.now();
+
+    var contents = JSON.stringify(expectedResult, null, 4);
+
+    memory(testConfig).then(function(instance) {
+      return instance.write(expectedFile, contents)
+        .then(function(actualFile) {
+          try {
+            expect(actualFile).to.equal(expectedFile);
+          } catch (ex) {
+            done(ex);
+            throw ex;
+          }
+          return instance.read(expectedFile);
+        })
+        .then(function() {
+          return instance.read(expectedFile);
+        })
+        .then(JSON.parse)
+        .then(testResult(expectedResult, done), done);
+    });
+  });
 });
