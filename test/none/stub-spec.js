@@ -1,5 +1,7 @@
 var expect = require('chai').expect;
 var memory = require('../../lib/api');
+var testResult = require('../helpers/testResult');
+var fail = require('../helpers/fail');
 
 describe('Operations against memory of type None', function() {
 
@@ -7,23 +9,6 @@ describe('Operations against memory of type None', function() {
   const config = {
     type: 'none'
   };
-
-  function fail(done) {
-    return function(ex) {
-      done('Unexpected success:' + ex);
-    }
-  }
-
-  function testResult(expected, done) {
-    return function(actual) {
-      try {
-        expect(actual).to.equal(expected);
-        done();
-      } catch (ex) {
-        done(ex);
-      }
-    }
-  }
 
   it('should reject a promise when asked to read', function(done) {
     memory(config).then(function(instance) {

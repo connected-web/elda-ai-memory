@@ -1,7 +1,11 @@
 var expect = require('chai').expect;
 var create = require('../../lib/api');
-var fs = require('fs');
-var UTF8 = 'utf-8';
+var read = function(file) {
+  return require('fs').readFileSync(file, 'utf-8');
+}
+var write = function(file, contents) {
+  return require('fs').writeFileSync(file, contents, 'utf-8');
+}
 
 describe('Store against memory of type Git', function() {
 
@@ -26,13 +30,14 @@ describe('Store against memory of type Git', function() {
     }
 
     function incrementCounter() {
-      var testFile = JSON.parse(fs.readFileSync('./temp/counter.json', UTF8));
+      var testFile = JSON.parse(read('./temp/counter.json'));
       updateCount = testFile.updates + 1;
       timestamp = timestamp;
 
       testFile.updates = updateCount;
       testFile.timestamp = timestamp;
-      fs.writeFileSync('./temp/counter.json', JSON.stringify(testFile, null, 4), UTF8);
+      var contents = JSON.stringify(testFile, null, 4);
+      write('./temp/counter.json', contents);
     }
 
     function storeAgainstMemory() {
@@ -44,7 +49,7 @@ describe('Store against memory of type Git', function() {
     }
 
     function finalCheck() {
-      var testFile = JSON.parse(fs.readFileSync('./temp/counter.json', UTF8));
+      var testFile = JSON.parse(read('./temp/counter.json'));
       expect(testFile).to.have.property('updates', updateCount);
       expect(testFile).to.have.property('timestamp', timestamp);
       done();
