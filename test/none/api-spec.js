@@ -1,5 +1,6 @@
 var expect = require('chai').expect;
 var memory = require('../../lib/api');
+var fail = require('../helpers/fail');
 
 describe('Configuring memory', function() {
 
@@ -8,10 +9,6 @@ describe('Configuring memory', function() {
     var badConfig = {
       type: expected
     };
-
-    function fail() {
-      done('Unexpected success');
-    }
 
     function testRejection(actual) {
       try {
@@ -22,7 +19,7 @@ describe('Configuring memory', function() {
       }
     }
 
-    memory(badConfig).then(fail, testRejection);
+    memory(badConfig).then(fail(done), testRejection);
   });
 
   it('should accept a promise based on a valid memory type', function(done) {

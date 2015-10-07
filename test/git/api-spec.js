@@ -4,7 +4,10 @@ var testResult = require('../helpers/testResult');
 var fail = require('../helpers/fail');
 var read = function(file) {
   return require('fs').readFileSync(file, 'utf-8');
-}
+};
+var write = function(file, contents) {
+  return require('fs').writeFileSync(file, contents, 'utf-8');
+};
 
 describe('Configure memory of type Git', function() {
 
@@ -53,10 +56,14 @@ describe('Configure memory of type Git', function() {
   });
 
   it('should accept a promise with a file name when asked to read, and write to that file with the expected content', function(done) {
-    var expectedFile = 'counter.json';
-    var expectedResult = JSON.parse(read(`./temp/${expectedFile}`));
-    expectedResult.updates = expectedResult.updates + 1;
-    expectedResult.timestamp = Date.now();
+    try {
+      var expectedFile = 'counter.json';
+      var expectedResult = JSON.parse(read(`./temp/${expectedFile}`));
+      expectedResult.updates = expectedResult.updates + 1;
+      expectedResult.timestamp = Date.now();
+    } catch (ex) {
+      done(ex);
+    }
 
     var contents = JSON.stringify(expectedResult, null, 4);
 
@@ -71,11 +78,39 @@ describe('Configure memory of type Git', function() {
           }
           return instance.read(expectedFile);
         })
-        .then(function() {
-          return instance.read(expectedFile);
-        })
         .then(JSON.parse)
         .then(testResult(expectedResult, done), done);
+    });
+  });
+
+  it('should accept a promise with a file name when asked to delete, and remove that file', function(done) {
+    try {
+      var expectedFile = 'test.file';
+      write(`./temp/${expectedFile}`, 'some data');
+      var sanityCheck = read(`./temp/${expectedFile}`);
+      expect(sanityCheck).to.equal('some data');
+    } catch (ex) {
+      done(ex);
+    }
+
+    memory(testConfig).then(function(instance) {
+      return instance.delete(expectedFile).then(function(actualFile) {
+        try {
+          expect(actualFile).to.equal(expectedFile);
+        } catch (ex) {
+          done(ex);
+          throw ex;
+        }
+        return instance.read(expectedFile).then(function(contents) {
+          done('Unexpected success of read operation on file that should not exist');
+        }, function(ex) {
+          if (ex) {
+            done();
+          } else {
+            done('Unexpected rejection with no data');
+          }
+        });
+      }, done);
     });
   });
 });
