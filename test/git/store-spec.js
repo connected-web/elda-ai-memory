@@ -3,7 +3,7 @@ var create = require('../../lib/api');
 var fs = require('fs');
 var UTF8 = 'utf-8';
 
-describe('Memory Store', function() {
+describe('Store against memory of type Git', function() {
 
   it('store files to a remote location', function(done) {
 
