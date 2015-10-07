@@ -6,13 +6,17 @@
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha --recursive --no-timeouts"
   },
-  "author": "",
+  "author": "John Beech",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/connected-web/elda-ai-memory/issues"
+  },
+  "homepage": "https://github.com/connected-web/elda-ai-memory",
   "devDependencies": {
     "chai": "3.3.x",
     "mocha": "2.3.x"
   },
   "dependencies": {
-    "rimraf": "^2.4.3"
+    "rimraf": "2.4.x"
   }
 }
