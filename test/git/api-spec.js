@@ -55,7 +55,7 @@ describe('Configure memory of type Git', function() {
     });
   });
 
-  it('should accept a promise with a file name when asked to read, and write to that file with the expected content', function(done) {
+  it('should accept a promise with a file name when asked to write, and then write to that file with the expected content', function(done) {
     try {
       var expectedFile = 'counter.json';
       var expectedResult = JSON.parse(read(`./temp/${expectedFile}`));
@@ -83,7 +83,7 @@ describe('Configure memory of type Git', function() {
     });
   });
 
-  it('should accept a promise with a file name when asked to delete, and remove that file', function(done) {
+  it('should accept a promise with a file name when asked to delete, and then remove that file', function(done) {
     try {
       var expectedFile = 'test.file';
       write(`./temp/${expectedFile}`, 'some data');
