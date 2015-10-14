@@ -84,33 +84,36 @@ describe('Configure memory of type Git', function() {
   });
 
   it('should accept a promise with a file name when asked to delete, and then remove that file', function(done) {
-    try {
-      var expectedFile = 'test.file';
-      write(`./temp/${expectedFile}`, 'some data');
-      var sanityCheck = read(`./temp/${expectedFile}`);
-      expect(sanityCheck).to.equal('some data');
-    } catch (ex) {
-      done(ex);
-    }
 
     memory(testConfig).then(function(instance) {
-      return instance.delete(expectedFile).then(function(actualFile) {
-        try {
-          expect(actualFile).to.equal(expectedFile);
-        } catch (ex) {
-          done(ex);
-          throw ex;
-        }
-        return instance.read(expectedFile).then(function(contents) {
-          done('Unexpected success of read operation on file that should not exist');
-        }, function(ex) {
-          if (ex) {
-            done();
-          } else {
-            done('Unexpected rejection with no data');
+      var expectedFile = 'test.file';
+
+      return instance.store(expectedFile, 'some data').then(function() {
+          try {
+            var sanityCheck = read(`./temp/${expectedFile}`);
+            expect(sanityCheck).to.equal('some data');
+          } catch (ex) {
+            return done(ex);
           }
-        });
-      }, done);
+          return instance.delete(expectedFile);
+        })
+        .then(function(actualFile) {
+          try {
+            expect(actualFile).to.equal(expectedFile);
+          } catch (ex) {
+            done(ex);
+            throw ex;
+          }
+          return instance.read(expectedFile).then(function(contents) {
+            done('Unexpected success of read operation on file that should not exist');
+          }, function(ex) {
+            if (ex) {
+              done();
+            } else {
+              done('Unexpected rejection with no data');
+            }
+          });
+        }, done);
     });
   });
 });
