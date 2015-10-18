@@ -1,6 +1,6 @@
 {
   "name": "elda-ai-memory",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Methods for external memory storage",
   "main": "lib/api.js",
   "scripts": {
