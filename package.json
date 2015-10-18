@@ -17,6 +17,7 @@
     "mocha": "2.3.x"
   },
   "dependencies": {
+    "mkdirp": "^0.5.1",
     "rimraf": "2.4.x"
   }
 }
