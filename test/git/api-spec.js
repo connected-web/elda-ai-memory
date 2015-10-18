@@ -42,7 +42,7 @@ describe('Configure memory of type Git', function() {
     memory(testConfig).then(test, done);
   });
 
-  it('should accept a promise with the file contents when asked to read', function(done) {
+  it('should be able to read from a file, and return a promise', function(done) {
     var expected = {
       'file': 'info.json',
       'message': `If you're reading this JSON file you've successfully accessed the remote test`
@@ -55,7 +55,7 @@ describe('Configure memory of type Git', function() {
     });
   });
 
-  it('should accept a promise with a file name when asked to write, and then write to that file with the expected content', function(done) {
+  it('should be able to write to a file, and return a promise', function(done) {
     try {
       var expectedFile = 'counter.json';
       var expectedResult = JSON.parse(read(`./temp/${expectedFile}`));
@@ -83,37 +83,38 @@ describe('Configure memory of type Git', function() {
     });
   });
 
-  it('should accept a promise with a file name when asked to delete, and then remove that file', function(done) {
+  it('should be able to delete a file, and return a promise', function(done) {
 
     memory(testConfig).then(function(instance) {
       var expectedFile = 'test.file';
+      var uniqueData = 'Time: ' + Date.now();
 
-      return instance.store(expectedFile, 'some data').then(function() {
-          try {
-            var sanityCheck = read(`./temp/${expectedFile}`);
-            expect(sanityCheck).to.equal('some data');
-          } catch (ex) {
-            return done(ex);
-          }
+      return instance.write(expectedFile, uniqueData).then(function() {
+          // Check that the file has been written
+          var sanityCheck = read(`./temp/${expectedFile}`);
+          expect(sanityCheck).to.equal(uniqueData);
+        })
+        .then(function() {
+          // Go delete the file
           return instance.delete(expectedFile);
         })
         .then(function(actualFile) {
-          try {
-            expect(actualFile).to.equal(expectedFile);
-          } catch (ex) {
+          // Check that file name is returned from delete
+          expect(actualFile).to.equal(expectedFile);
+        })
+        .then(function() {
+          // Expecting this read to fail as part of the test
+          return instance.read(expectedFile);
+        })
+        .then(function(contents) {
+          expect(contents).to.not.deep.equal(uniqueData);
+        }).catch(function(ex) {
+          if (ex.toString().indexOf('ENOENT') !== -1) {
+            done();
+          } else {
             done(ex);
-            throw ex;
           }
-          return instance.read(expectedFile).then(function(contents) {
-            done('Unexpected success of read operation on file that should not exist');
-          }, function(ex) {
-            if (ex) {
-              done();
-            } else {
-              done('Unexpected rejection with no data');
-            }
-          });
-        }, done);
+        });
     });
   });
 });
